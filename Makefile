@@ -1,24 +1,19 @@
-# Makefile
-
-# Variables
-SRC_DIR = .
+SRC_DIR = src
 OUT_DIR = out
-MAIN_CLASS = com.Ramzy842.sms.App
+MAIN_CLASS = App
 
-# Find all .java files
-SOURCES := $(shell find $(SRC_DIR) -name "*.java")
+SOURCES := $(wildcard $(SRC_DIR)/*.java)
 
-# Default target
 all: compile run
 
-# Compile Java files
 compile:
-	javac -d $(OUT_DIR) $(SOURCES)
+	@mkdir -p $(OUT_DIR)
+	@javac -d $(OUT_DIR) $(SOURCES)
 
-# Run the main class
 run:
-	java -cp $(OUT_DIR) $(MAIN_CLASS)
+	@java -cp $(OUT_DIR) $(MAIN_CLASS)
 
-# Clean compiled files
 clean:
-	rm -rf $(OUT_DIR)
+	@rm -rf $(OUT_DIR)
+
+re: clean all
