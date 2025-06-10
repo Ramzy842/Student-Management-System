@@ -1,14 +1,16 @@
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class App {
-    public static class Menu {
-        public static final String RESET = "\u001B[0m";
-        public static final String RED = "\u001B[31m";
-        public static final String GREEN = "\u001B[32m";
-        public static final String YELLOW = "\u001B[33m";
-        public static final String BLUE = "\u001B[34m";
+    static ArrayList<Student> students;
+    static final String RESET = "\u001B[0m";
+    static final String RED = "\u001B[31m";
+    static final String GREEN = "\u001B[32m";
+    static final String YELLOW = "\u001B[33m";
+    static final String BLUE = "\u001B[34m";
 
+    static class Menu {
         public static void print() {
             System.out.println(BLUE + "Welcome to Student Management System");
             System.out.println("------------------------------------" + RESET);
@@ -23,7 +25,154 @@ public class App {
         }
     }
 
+    static void addStudent(Scanner scanner) {
+        System.out.print("Enter name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter age: ");
+        int age = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Enter email: ");
+        String email = scanner.nextLine();
+
+        System.out.print("Enter course: ");
+        String course = scanner.nextLine();
+
+        System.out.print("Enter GPA: ");
+        double gpa = scanner.nextDouble();
+        Student s = new Student(students.size(), name, age, email, course, gpa);
+        students.add(s);
+    }
+
+    static void viewStudents() {
+        System.out.println();
+        System.out.printf("%-5s | %-15s | %-5s | %-25s | %-20s | %-5s\n", "ID", "Name", "Age", "Email",
+                "Course", "GPA");
+        System.out.println(
+                "-------------------------------------------------------------------------------------------------------------");
+        for (int x = 0; x < students.size(); x++) {
+            int id = students.get(x).getId();
+            String name = students.get(x).getName();
+            int age = students.get(x).getAge();
+            String email = students.get(x).getEmail();
+            String course = students.get(x).getCourse();
+            double gpa = students.get(x).getGpa();
+            System.out.printf("%-5s | %-15s | %-5s | %-25s | %-20s | %-5s\n", id, truncate(name, 15), age,
+                    truncate(email, 25), truncate(course, 20),
+                    gpa);
+        }
+        System.out.println();
+    }
+
+    static void updateStudent(Scanner scanner) {
+        System.out.print(GREEN + "Enter ID of the student to update: " + RESET);
+        int id = -1;
+        try {
+            id = scanner.nextInt();
+            if (id < 0)
+            {
+                System.err.println(RED + "Please enter a valid ID next time!" + RESET);
+                return ;
+            }
+        } catch (InputMismatchException e) {
+            System.err.println(RED + "Please enter a valid ID next time!" + RESET);
+        }
+        if (id == -1)
+            return ;
+        Student s = null;
+        try {
+            s = students.get(id);
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println(RED + "student with ID: " + id + " is not available" + RESET);
+            return;
+        }
+        scanner.nextLine();
+        System.out.println(BLUE + "1. " + RESET + "Name");
+        System.out.println(BLUE + "2. " + RESET + "Age");
+        System.out.println(BLUE + "3. " + RESET + "Email");
+        System.out.println(BLUE + "4. " + RESET + "Course");
+        System.out.println(BLUE + "5. " + RESET + "GPA");
+        System.out.println(BLUE + "0. " + RESET + "Exit");
+        System.out.print(GREEN + "Choose the number that corresponds to the property you want to change: " + RESET);
+        int choice = -1;
+        try {
+            choice = scanner.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println(RED + "Invalid input, please enter a valid number from 0 to 5" + RESET);
+            return;
+        } finally {
+            scanner.nextLine();
+        }
+        switch (choice) {
+            case 1:
+                System.out.print("Enter the new name: ");
+                String name = scanner.nextLine();
+                s.setName(name);
+                break;
+            case 2:
+                System.out.print("Enter the new age: ");
+                try {
+                    int age = scanner.nextInt();
+                    s.setAge(age);
+                } catch (InputMismatchException e) {
+                    System.err.println(RED + "Please enter a valid age next time!" + RESET);
+                } finally {
+                    scanner.nextLine();
+                }
+                break;
+            case 3:
+                System.out.print("Enter the new email: ");
+                String email = scanner.nextLine();
+                s.setEmail(email);
+                break;
+            case 4:
+                System.out.print("Enter the new course: ");
+                String course = scanner.nextLine();
+                s.setCourse(course);
+                break;
+            case 5:
+                System.out.print("Enter the new GPA: ");
+                try {
+                    double gpa = scanner.nextDouble();
+                    s.setGpa(gpa);
+                } catch (InputMismatchException e) {
+                    System.err.println(RED + "Please enter a valid GPA next time!" + RESET);
+                } finally {
+                    scanner.nextLine();
+                }
+                break;
+            case 0:
+                System.out.print(">>> Exiting Student update... <<<");
+                break;
+            default:
+                break;
+        }
+    }
+
+    static void deleteStudent(Scanner scanner) {
+    }
+
+    static void searchStudent(Scanner scanner) {
+
+    }
+
+    static void saveToFile() {
+
+    }
+
+    static void loadFromFile() {
+
+    }
+
+    static String truncate(String value, int maxLength) {
+        if (value.length() <= maxLength)
+            return value;
+        return value.substring(0, maxLength - 3) + "..."; // adds ellipsis
+    }
+
     public static void main(String args[]) {
+        students = new ArrayList<Student>();
         // Build the menu
         // init an array of students
         // When user chooses an option, respond with correct response
@@ -46,43 +195,43 @@ public class App {
         int choice = -1;
         do {
             Menu.print();
-            System.out.print("Choose an option: ");
+            System.out.print(GREEN + "Choose an option: " + RESET);
             try {
                 choice = scanner.nextInt();
+                scanner.nextLine();
             } catch (InputMismatchException e) {
-                System.out.println("Invalid input, please enter a valid number from 0 to 7");
+                System.out.println(RED + "Invalid input, please enter a valid number from 0 to 7" + RESET);
                 scanner.nextLine(); // clear the invalid input
                 continue; // skip to next loop iteration
             }
             switch (choice) {
                 case 1:
-                    System.out.print(">>> ADD STUDENT <<<");
+                    addStudent(scanner);
                     break;
                 case 2:
-                    System.out.print(">>> VIEW ALL STUDENTS <<<");
+                    viewStudents();
                     break;
                 case 3:
-                    System.out.print(">>> UPDATE STUDENT <<<");
+                    updateStudent(scanner);
                     break;
                 case 4:
-                    System.out.print(">>> DELETE STUDENT <<<");
+                    deleteStudent(scanner);
                     break;
                 case 5:
-                    System.out.print(">>> SEARCH STUDENT <<<");
+                    searchStudent(scanner);
                     break;
                 case 6:
-                    System.out.print(">>> SAVE TO FILE <<<");
+                    saveToFile();
                     break;
                 case 7:
-                    System.out.print(">>> LOAD FROM FILE <<<");
+                    loadFromFile();
                     break;
                 case 0:
                     System.out.print(">>> Exiting program... <<<");
                     break;
                 default:
                     System.out.println("Please enter a valid number from 0 to 7");
-                }
-            System.err.println();
+            }
         } while (choice != 0);
 
         scanner.close();
